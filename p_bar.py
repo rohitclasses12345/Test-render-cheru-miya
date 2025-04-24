@@ -1,3 +1,4 @@
+import random
 import time
 import math
 import os
@@ -24,7 +25,7 @@ def hrb(value, digits= 2, delim= "", postfix=""):
     if value is None:
         return None
     chosen_unit = "B"
-    for unit in ("KiB", "MiB", "GiB", "TiB"):
+    for unit in ("KB", "MB", "GB", "TB"):
         if value > 1000:
             value /= 1024
             chosen_unit = unit
@@ -40,22 +41,22 @@ def hrt(seconds, precision = 0):
     
 
     if value.days:
-        pieces.append(f"{value.days}d")
+        pieces.append(f"{value.days}day")
 
     seconds = value.seconds
 
     if seconds >= 3600:
         hours = int(seconds / 3600)
-        pieces.append(f"{hours}h")
+        pieces.append(f"{hours}hr")
         seconds -= hours * 3600
 
     if seconds >= 60:
         minutes = int(seconds / 60)
-        pieces.append(f"{minutes}m")
+        pieces.append(f"{minutes}min")
         seconds -= minutes * 60
 
     if seconds > 0 or not pieces:
-        pieces.append(f"{seconds}s")
+        pieces.append(f"{seconds}sec")
 
     if not precision:
         return "".join(pieces)
@@ -66,7 +67,6 @@ def hrt(seconds, precision = 0):
 
 timer = Timer()
 
-# designed by Mendax
 async def progress_bar(current, total, reply, start):
     if timer.can_send():
         now = time.time()
@@ -86,20 +86,28 @@ async def progress_bar(current, total, reply, start):
             sp = str(hrb(speed)) + "/s"
             tot = hrb(total)
             cur = hrb(current)
-            
-            #don't even change anything till here
-            # Calculate progress bar dots
-            #ab mila dil ko sukun #by AirPheonix
-            #change from here if you want 
-            bar_length = 10
+            bar_length = 11
             completed_length = int(current * bar_length / total)
             remaining_length = bar_length - completed_length
-            progress_bar = "▰" * completed_length + "▱" * remaining_length
+
+            symbol_pairs = [
+                ("🖤", "💝"),
+                ("💗", "🤍"),
+                ("👻", "💝"),
+                ("😾", "😻"),
+                ("🦝", "🐺"),
+                ("◼", "◻"),
+                ("█", "░"),
+                ("🦁", "🦊"),
+                ("🐠", "🐹"),
+                ("🐣", "🐠")
+            ]
+            chosen_pair = random.choice(symbol_pairs)
+            completed_symbol, remaining_symbol = chosen_pair
+
+            progress_bar = completed_symbol * completed_length + remaining_symbol * remaining_length
             
             try:
-                await reply.edit(f'╭───💥 𝗨𝗣𝗟𝗢𝗔𝗗𝗘𝗥 💥───╮ \n┣{progress_bar} \n┣𝗦𝗣𝗘𝗘𝗗 ⚡ ➠ {sp} \n┣𝗣𝗥𝗢𝗚𝗥𝗘𝗦𝗦 🧭 ➠ {perc} \n┣𝗟𝗢𝗔𝗗𝗘𝗗 🗂️ ➠ {cur} \n┣𝗦𝗜𝗭𝗘 🧲 ➠ {tot} \n┣𝗘𝗧𝗔 ⏳ ➠ {eta} \n╰────[🦋⃪꯭ ─‌⃛┼ 𝞄⃕𝖋𝖋 समय यात्री](tg://user?id=6126688051)⁬────╯ \n')
-                #await reply.edit(f'`**╭━━━━━━━━━━━━━ ❀° ━━━╮**\n**┣⪼ᴘʀᴏɢʀᴇss ʙᴀʀ** \n║╭━━━━━━━━━━━━━━━➣\n║┣ ⚡[{progress_bar}] : {perc}\n║┣ 🚀 sᴘᴇᴇᴅ : {sp} \n║┣ 📟 ᴘʀᴏᴄᴇssᴇᴅ : {cur}\n║┣ 💾 sɪᴢᴇ :{tot}\n║┣ ⏳ ᴇᴛᴀ :{eta} \n║╰━━━━━━━━━━━━━━━➣\n┣⪼ᴘᴏᴡᴇʀᴇᴅ ʙʏ: 🅱🅴🅰🆂🆃 👑⌋\n╰━━━━━━━━━━━━━ ❀° ━━━╯シ`') 
-                #await reply.edit(f'`╭━━━━❰ᴘʀᴏɢʀᴇss ʙᴀʀ❱━➣ \n┣⪼ ⚡{progress_bar} : {perc}\n┣⪼ 🚀 sᴘᴇᴇᴅ : {sp} \n┣⪼ 📟 ᴘʀᴏᴄᴇssᴇᴅ : {cur}\n┣⪼ 💾 sɪᴢᴇ- ᴇᴛᴀ :  {tot} : {eta} \n╰━⌈🅱🅴🅰🆂🆃 👑⌋─━━➣`\n') 
+                await reply.edit(f'`🦋⃪꯭ ─‌⃛┼ 𝞄⃕𝖋𝖋 समय यात्री Sᴛʀᴀɴɢᴇʀ ʙᴏʏs THE BOYS🥵⃝⃝ᬽ꯭ ⃪꯭ \n🙆‍♂️ {progress_bar}\n├👩‍🎓 Progress ➤ | {perc} |\n├👀 Speed ➤ | {sp} |\n├💗 Processed ➤ | {cur} |\n├💬 Size ➤ | {tot} |\n├💢 ETA ➤ | {eta} |\n🦋 Sᴛʀᴀɴɢᴇʀ ʙᴏʏs THE BOYS🥵⃝⃝ᬽ꯭ ⃪꯭ on`') 
             except FloodWait as e:
                 time.sleep(e.x)
-                
